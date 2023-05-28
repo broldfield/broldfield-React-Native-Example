@@ -1,0 +1,97 @@
+import jsonServer from "../api/jsonServer";
+import { useQuery } from "@tanstack/react-query";
+
+/**- Does a useQuery on provided URL endpoint.
+ * - Uses Axios to do the GET request
+ * - Full URL is found in API jsonServer.js
+ * @param {*} url String, is the API endpoint to GET EG "/section"
+ * @returns jsonResponse from API
+ */
+export const fetchFunc = async (url) => {
+  const myUrl = url;
+
+  async function fetchData() {
+    const response = await jsonServer.get(myUrl);
+    return response;
+  }
+
+  const { data, isLoading, isError } = useQuery([myUrl], async () =>
+    fetchData()
+  );
+
+  if (!isLoading && !isError) {
+    return data.data;
+  }
+};
+
+/** - Does a useQuery on provided URL endpoint.
+ * - Uses Axios to do the GET request
+ * - Full URL is found in API jsonServer.js
+ * - adds a param to the get request so the GET looks like:
+ * - /{tableToQuery}?{subTableKey}={tableKey}
+ *
+ * @param {*} url String, is the API endpoint to GET EG "/section"
+ * @param {*} subTableKey FK ID IE sectionID in SubSection Table
+ * @param {*} tableKey Parents ID from previous screeen, given during Nav
+ * @returns filtered GET jsonResponse by Foreign Key.
+ */
+export const fetchFuncWithFilter = async (url, subTableKey, tableKey) => {
+  const myUrl = url;
+  const mySubTableKey = subTableKey;
+  const myTableKey = tableKey;
+
+  const params = {
+    [mySubTableKey]: myTableKey,
+  };
+
+  async function fetchDataFilter() {
+    const response = await jsonServer.get(myUrl, { params });
+    return response;
+  }
+
+  const { data, isLoading, isError } = useQuery([myUrl, myTableKey], async () =>
+    fetchDataFilter()
+  );
+
+  if (!isLoading && !isError) {
+    return data;
+  }
+};
+
+/**
+ *
+ * @param {*} url
+ * @param {*} subTableKey
+ * @param {*} tableKey
+ * @param {*} fileType
+ * @returns
+ */
+export const fetchFuncWithFilterFiles = async (
+  url,
+  subTableKey,
+  tableKey,
+  fileType
+) => {
+  const myUrl = url;
+  const mySubTableKey = subTableKey;
+  const myTableKey = tableKey;
+  const myType = fileType;
+
+  const params = {
+    [mySubTableKey]: myTableKey,
+    type: myType,
+  };
+
+  async function fetchDataFilter() {
+    const response = await jsonServer.get(myUrl, { params });
+    return response;
+  }
+
+  const { data, isLoading, isError } = useQuery([myUrl, myTableKey], async () =>
+    fetchDataFilter()
+  );
+
+  if (!isLoading && !isError) {
+    return data;
+  }
+};

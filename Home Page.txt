@@ -1,0 +1,199 @@
+import React, { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+} from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Card } from "react-native-shadow-cards";
+import Styles from "../components/Styles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Disclaimer from "../components/Disclaimer";
+import Modal from "react-native-modal";
+import AboutUs from "../components/AboutUs";
+import { fetchFunc, fetchFuncWithFilter } from "../helper/helperFetch";
+
+const HomeScreen = ({ navigation }) => {
+  const [showDisclaimer, setDisclaimer] = useState(false);
+  const [screenUpdate, setScreen] = useState(false);
+  const [modalVisible, setModalVis] = useState(false);
+  const [modalAboutUsVisible, setAboutUsModalVis] = useState(false);
+
+  const urlInfo = "/info";
+
+  //used to Preload the Disclaimer
+  const blankResponse = fetchFuncWithFilter(urlInfo, "type", "disclaimer");
+  const blankResponse2 = fetchFuncWithFilter(urlInfo, "type", "aboutus");
+  //PreLoad Sections
+  const response = fetchFunc("/section");
+  // console.log(response?._3?.data);
+
+  AsyncStorage.getItem("/disclaimer", (err, result) => {
+    if (err) {
+      console.log("true");
+    } else {
+      if (result == null) {
+        setDisclaimer(true);
+      }
+    }
+  });
+
+  return (
+    // Render Disclaimer.js on first load
+    <ScrollView
+      contentContainerStyle={Styles.homeScrollStyle}
+      onLayout={() => {
+        setScreen(!screenUpdate);
+      }}
+    >
+      <View style={Styles.qandaViewStyle}>
+        <Modal
+          // transparent={true}
+          isVisible={modalVisible}
+          onRequestClose={() => setModalVis(false)}
+          animationType={"fade"}
+          hasBackdrop={true}
+          backdropColor={"gray"}
+          backdropOpacity={0.2}
+          coverScreen={true}
+        >
+          <View style={Styles.disclaimerView}>
+            <View style={Styles.disclaimerIconStyle}>
+              <Disclaimer />
+              <TouchableOpacity onPress={() => setModalVis(false)}>
+                <MaterialIcons
+                  name="check"
+                  size={30}
+                  color="gray"
+                  style={Styles.disclaimerIconStyle}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Render About Us Popup when tapped */}
+        <Modal
+          isVisible={modalAboutUsVisible}
+          onRequestClose={() => setAboutUsModalVis(false)}
+          animationType={"fade"}
+          hasBackdrop={true}
+          backdropColor={"gray"}
+          backdropOpacity={0.2}
+          coverScreen={true}
+        >
+          <View style={Styles.disclaimerView}>
+            <View style={Styles.disclaimerIconStyle}>
+              <AboutUs />
+              <TouchableOpacity onPress={() => setAboutUsModalVis(false)}>
+                <MaterialIcons
+                  name="check"
+                  size={32}
+                  color="gray"
+                  style={Styles.disclaimerIconStyle}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Example of a navigation Button */}
+        <View>
+          {/* Create a Card Container for display */}
+          <Card style={Styles.cardStyle} cornerRadius={2}>
+            {/* Read when a user touches via onPress */}
+            <TouchableOpacity
+              style={Styles.touchStyle}
+              // Navigate to 'Topics' screen from StackNavigator.js
+              onPress={() => navigation.navigate("Topics")}
+            >
+              {/* Button Text*/}
+              <Text style={Styles.buttonStyle}>Legal FAQ</Text>
+              {/* Arrow at end of button from Flex */}
+              <MaterialIcons
+                style={Styles.arrowStyle}
+                name="arrow-forward-ios"
+                size={24}
+                color="gray"
+              />
+            </TouchableOpacity>
+          </Card>
+        </View>
+
+        <View>
+          <Card style={Styles.cardStyle} cornerRadius={2}>
+            <TouchableOpacity
+              style={Styles.touchStyle}
+              onPress={() => navigation.navigate("Factsheet Topics")}
+            >
+              <Text style={Styles.buttonStyle}>Factsheets</Text>
+              <MaterialIcons
+                style={Styles.arrowStyle}
+                name="fact-check"
+                size={32}
+                color="gray"
+              />
+            </TouchableOpacity>
+          </Card>
+        </View>
+
+        <View>
+          <Card style={Styles.cardStyle} cornerRadius={2}>
+            <TouchableOpacity
+              style={Styles.touchStyle}
+              onPress={() => navigation.navigate("Presentations")}
+            >
+              <Text style={Styles.buttonStyle}>Presentations</Text>
+              <MaterialIcons
+                style={Styles.arrowStyle}
+                name="videocam"
+                size={32}
+                color="gray"
+              />
+            </TouchableOpacity>
+          </Card>
+        </View>
+
+        <View>
+          <Card style={Styles.cardStyle} cornerRadius={2}>
+            <TouchableOpacity
+              style={Styles.touchStyle}
+              onPress={() => navigation.navigate("Podcasts")}
+            >
+              <Text style={Styles.buttonStyle}>Podcasts</Text>
+              <MaterialIcons
+                style={Styles.arrowStyle}
+                name="mic"
+                size={32}
+                color="gray"
+              />
+            </TouchableOpacity>
+          </Card>
+        </View>
+
+        <View>
+          <Card style={Styles.cardStyle} cornerRadius={2}>
+            <TouchableOpacity
+              style={Styles.touchStyle}
+              onPress={() => setAboutUsModalVis(true)}
+            >
+              <Text style={Styles.buttonStyle}>About Us</Text>
+              <MaterialIcons
+                style={Styles.arrowStyle}
+                name="info-outline"
+                size={32}
+                color="gray"
+              />
+            </TouchableOpacity>
+          </Card>
+        </View>
+      </View>
+    </ScrollView>
+  );
+};
+
+const styles = StyleSheet.create({});
+
+export default HomeScreen;
